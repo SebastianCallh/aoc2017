@@ -1,0 +1,91 @@
+import           Control.Monad.State
+import           Data.IORef
+import           Data.List.Zipper
+--import           Data.Vector.Unboxed.Mutable hiding (length, read)
+import qualified Data.Vector.Unboxed         as V
+import qualified Data.Vector.Unboxed.Mutable as M
+
+data MyState = State Int [Int]
+
+
+input :: IO [String]
+input = lines <$> readFile "day5-input.txt"
+
+answer1 :: IO Int
+answer1 = do
+  lines  <- fmap read <$> input
+  let zipper = Zip [] lines
+  return $ runZipper zipper  0
+
+runZipper :: Zipper Int -> Int -> Int
+runZipper zipper count = runZipper zipper' (succ count)
+  where
+    zipper' = foldr move zipper [1..n]
+    move = const $ if n > 0 then right else left
+    run = undefined
+    n = cursor zipper
+
+
+thingy :: [Int] -> IO Int
+thingy instrs = do
+  v    <- V.thaw $ V.fromList instrs
+  vref <- newIORef v
+  iref <- newIORef (0 :: Int)
+  cref <- newIORef (0 :: Int)
+  run vref iref cref
+
+{-run
+  :: IORef (MVector Int Int)
+  -> IORef Int
+  -> IORef Int
+  -> IORef Int-}
+run vref iref cref = do
+  i <- readIORef iref
+  v <- readIORef vref
+  x <- M.read v i
+  M
+
+{-while p f
+  | p = while p f
+  | otherwise = f
+
+
+
+run vref iref cref
+  | done      = undefined
+  | otherwise = do
+      v <- readIORef vref
+      i <- readIORef iref
+      U.read v i
+      undefined
+
+  where
+    done = undefined
+    l    = undefined
+-}
+{-
+run :: [Int] -> IO Int
+run instrs = do
+  let l = length instrs
+  indexr <- newIORef (0 :: Int)
+  countr <- newIORef (0 :: Int)
+  doner  <- newIORef (False :: Bool)
+  xs <- U.new l
+  done <- readIORef doner
+  run
+  where
+    run = do
+      print $ "l "  ++ show l
+      unless done $ do
+        i  <- readIORef indexr
+        x  <- U.read xs i
+        U.write xs i (succ x :: Int)
+        writeIORef indexr $ i + x
+        print $ mconcat ["x: ", show x, " i: ", show i]
+        modifyIORef' countr succ
+        modifyIORef' doner  (const $ l < i)
+      readIORef countr
+-}
+
+test :: [Int]
+test = [0 ,3 , 0, 1 ,-3]
